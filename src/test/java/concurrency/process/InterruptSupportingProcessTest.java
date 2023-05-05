@@ -5,31 +5,44 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InterruptSupportingProcessTest {
+    private static WaitingProcess process;
+    private static long totalTime;
 
     @Test
-    public void testInterrupt() {
-        WaitingProcess process = new WaitingProcess();
+    public void testInterruptingWait() {
+        givenProcessWaiting(1000);
+        whenTryingToKillItDuringSleepAfter(75);
+        thenItShouldFinishNoLongerThan(100);
+    }
+
+    private void givenProcessWaiting(long time) {
+        process = new WaitingProcess(time);
+    }
+
+    private void whenTryingToKillItDuringSleepAfter(long millis) {
         process.start();
         long start = System.currentTimeMillis();
         try {
-            Thread.sleep(100);
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         process.getExecutionController().kill();
         process.waitUntilFinished();
-        long totalTime = System.currentTimeMillis() - start;
-        System.out.println(totalTime);
+        totalTime = System.currentTimeMillis() - start;
+    }
+
+    private void thenItShouldFinishNoLongerThan(long maxMillis) {
+        assertTrue(totalTime <= maxMillis);
     }
 
 
-
     private static class WaitingProcess extends InterruptSupportingProcess {
-        private final static int waitTime = 1000;
-        private long destructionTime;
+        private long waitTime;
 
-        public WaitingProcess() {
+        public WaitingProcess(long waitTime) {
             super("WAITING PROCESS");
+            this.waitTime = waitTime;
         }
 
         @Override
@@ -39,12 +52,6 @@ class InterruptSupportingProcessTest {
             } catch (InterruptedException e) {
                 getInterruptedExceptionHandler().handle(e);
             }
-        }
-
-        @Override
-        protected void destruct() {
-            super.destruct();
-            destructionTime = System.currentTimeMillis();
         }
     }
 }
