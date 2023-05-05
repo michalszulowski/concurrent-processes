@@ -1,20 +1,19 @@
 package concurrency.process;
 
+import concurrency.CheckForPendingActionsOnInterruptHandler;
 import concurrency.ExceptionHandler;
-import concurrency.KillOnInterruptHandler;
 
-
-public abstract class SimpleConcurrentProcess extends AbstractConcurrentProcess {
+public abstract class InterruptSupportingProcess extends AbstractConcurrentProcess {
     private final ExceptionHandler<InterruptedException> interruptedExceptionExceptionHandler;
 
-    public SimpleConcurrentProcess(String name) {
+    public InterruptSupportingProcess(String name) {
         super(name);
-        interruptedExceptionExceptionHandler = new KillOnInterruptHandler(this);
+        interruptedExceptionExceptionHandler = new CheckForPendingActionsOnInterruptHandler(this);
     }
 
     @Override
     public synchronized void notifyAboutChangedState() {
-        // No notification supported, process simply changes if new state has been set.
+        runThread.interrupt();
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-public class TimePrintingProcess extends SimpleConcurrentProcess {
+public class TimePrintingProcess extends ByFlagControlledProcess {
     private final int WAIT_TIME = 1000;
     private int iteration;
     private PrintStream output;

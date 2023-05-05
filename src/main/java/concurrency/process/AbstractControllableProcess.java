@@ -4,8 +4,8 @@ package concurrency.process;
 import concurrency.UncaughtThreadExceptionHandler;
 
 public abstract class AbstractControllableProcess implements ConcurrentProcess {
-    private final Thread runThread;
-    private final String name;
+    protected final Thread runThread;
+    protected final String name;
     private boolean running;
 
     public AbstractControllableProcess(String name) {
@@ -32,8 +32,7 @@ public abstract class AbstractControllableProcess implements ConcurrentProcess {
 
     protected abstract void performMainLoopBody();
 
-    //TODO rename maybe something like finalize
-    protected void freeResources() {}
+    protected void destruct() {}
 
     private Thread constructThread(String name) {
         Thread thread = new Thread(this::startMainLoop);
@@ -55,6 +54,6 @@ public abstract class AbstractControllableProcess implements ConcurrentProcess {
 
     private void kill() {
         running = false;
-        freeResources();
+        destruct();
     }
 }
