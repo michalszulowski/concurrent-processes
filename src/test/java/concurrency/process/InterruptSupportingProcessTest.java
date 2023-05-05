@@ -12,7 +12,7 @@ class InterruptSupportingProcessTest {
     public void testInterruptingWait() {
         givenProcessWaiting(1000);
         whenTryingToKillItDuringSleepAfter(75);
-        thenItShouldFinishNoLongerThan(100);
+        thenItShouldFinishNoLaterThan(100);
     }
 
     private void givenProcessWaiting(long time) {
@@ -32,8 +32,8 @@ class InterruptSupportingProcessTest {
         totalTime = System.currentTimeMillis() - start;
     }
 
-    private void thenItShouldFinishNoLongerThan(long maxMillis) {
-        assertTrue(totalTime <= maxMillis);
+    private void thenItShouldFinishNoLaterThan(long millisSinceStart) {
+        assertTrue(totalTime <= millisSinceStart);
     }
 
 
