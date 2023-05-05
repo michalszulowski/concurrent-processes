@@ -1,20 +1,25 @@
 package concurrency.process;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InterruptSupportingProcessTest {
 
+    @Test
     public void testInterrupt() {
         WaitingProcess process = new WaitingProcess();
         process.start();
-        long time = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         process.getExecutionController().kill();
-        //TODO finish
+        process.waitUntilFinished();
+        long totalTime = System.currentTimeMillis() - start;
+        System.out.println(totalTime);
     }
 
 

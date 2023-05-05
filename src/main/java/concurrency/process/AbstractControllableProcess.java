@@ -6,12 +6,14 @@ import concurrency.UncaughtThreadExceptionHandler;
 public abstract class AbstractControllableProcess implements ConcurrentProcess {
     protected final Thread runThread;
     protected final String name;
-    private boolean running;
+    private volatile boolean running;
+    private volatile boolean finished;
 
     public AbstractControllableProcess(String name) {
         runThread = constructThread(name);
         this.name = name;
         running = false;
+        finished = false;
     }
 
     @Override
@@ -28,6 +30,18 @@ public abstract class AbstractControllableProcess implements ConcurrentProcess {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public synchronized void waitUntilFinished() {
+        if (finished) {
+            return;
+        }
+        try {
+            wait();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected abstract void performMainLoopBody();
@@ -52,8 +66,10 @@ public abstract class AbstractControllableProcess implements ConcurrentProcess {
         }
     }
 
-    private void kill() {
+    private synchronized void kill() {
         running = false;
         destruct();
+        finished = true;
+        notifyAll();
     }
 }

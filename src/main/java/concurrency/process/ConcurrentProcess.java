@@ -13,5 +13,6 @@ public interface ConcurrentProcess extends ControllableProcess {
     void notifyAboutChangedState();
     void checkForPendingControlActions();
     boolean isRunning();
+    void waitUntilFinished();
     ExceptionHandler<InterruptedException> getInterruptedExceptionHandler();
 }
